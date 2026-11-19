@@ -1,3 +1,4 @@
 -- Initial schema is applied idempotently by SQLAlchemy metadata.create_all.
--- Authoritative entities: users, nodes, request_sets, trials, audit_logs.
+-- Authoritative entities: users, nodes, request_sets, trials, commit_trials, audit_logs.
 -- Routing request events and frozen input/result evidence are MySQL JSON.
+-- commit_trials is additive: classic trials keep their original columns and meaning.

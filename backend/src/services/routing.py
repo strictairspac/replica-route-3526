@@ -47,7 +47,7 @@ def simulate(node_inputs,events,max_delay_ms,sticky_ms):
             if selected:row.update(node=selected['name'],decision='routed',observed_position=selected['position'],safe=selected['position']>=required and selected['lineage']==state['lineage'])
             else:row['decision']='rejected'
             row['replica_checks']=[{'name':n['name'],'healthy':n['status']=='healthy','same_lineage':n['lineage']==state['lineage'],'position_sufficient':n['position']>=required,'delay_within_limit':n['delay_ms']<=max_delay_ms} for n in nodes.values() if n['role']=='replica']
-        else:raise ValueError('未知事件类型')
+        else:raise ValueError('commit/query 事件属于提交视点演练，请改用提交视点页面运行' if kind in ('commit','query') else '未知事件类型')
         trace.append(row)
     requests=[r for r in trace if r['kind'] in ('read','write')];routed=[r for r in requests if r['decision']=='routed'];rejected=[r for r in requests if r['decision']=='rejected'];safe=all(r['safe'] for r in routed)
     result={'mode':'受控复制路由模型 / 非真实复制集群','lineage':lineage,'trace':trace,'sessions':sessions,'final_nodes':list(nodes.values()),'summary':{'requests':len(requests),'routed':len(routed),'rejected':len(rejected),'replica_reads':sum(r['kind']=='read' and r['node']!=primary['name'] for r in routed),'primary_reads':sum(r['kind']=='read' and r['node']==primary['name'] for r in routed),'all_routed_reads_safe':safe},'policy':{'max_delay_ms':max_delay_ms,'sticky_ms':sticky_ms,'position_model':'同一命名日志谱系的单调整数位点，不是完整GTID集合','sticky_boundary':'at_ms - last_write_ms < sticky_ms','replica_tie_break':'delay升序 / position降序 / name字典序'}}

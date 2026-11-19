@@ -16,6 +16,17 @@ class Trial(Base):
     id=Column(Integer,primary_key=True);name=Column(String(120),nullable=False);request_set_id=Column(Integer,ForeignKey('request_sets.id'),nullable=False)
     max_delay_ms=Column(Integer,nullable=False);sticky_ms=Column(Integer,nullable=False);status=Column(String(20),nullable=False,default='queued');input_snapshot=Column(JSON,nullable=False);result=Column(JSON,nullable=True);error=Column(Text,nullable=True)
     created_at=Column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
+
+
+class CommitTrial(Base):
+    """提交视点演练：单独的记录表，不改动既有 trials 表结构，旧试验保持原样。"""
+    __tablename__ = 'commit_trials'
+    id = Column(Integer, primary_key=True); name = Column(String(120), nullable=False); request_set_id = Column(Integer, ForeignKey('request_sets.id'), nullable=False)
+    max_delay_ms = Column(Integer, nullable=False); wait_ms = Column(Integer, nullable=False); primary_down_policy = Column(String(30), nullable=False)
+    status = Column(String(20), nullable=False, default='queued'); input_snapshot = Column(JSON, nullable=False); result = Column(JSON, nullable=True); error = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=lambda: datetime.now(timezone.utc))
+
+
 class Audit(Base):
     __tablename__='audit_logs'
     id=Column(Integer,primary_key=True);actor=Column(String(120),nullable=False);action=Column(String(160),nullable=False);created_at=Column(DateTime(timezone=True),default=lambda:datetime.now(timezone.utc))
